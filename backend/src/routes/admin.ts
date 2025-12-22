@@ -208,9 +208,9 @@ router.get('/stats', authenticate, isAdmin, async (req, res) => {
     const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
 
     const users = await userRepo.find();
-    const totalVendors = users.filter(u => u.role === 'vendor').length;
-    const totalInstallers = users.filter(u => u.role === 'installer').length;
-    const totalCustomers = users.filter(u => u.role === 'customer').length;
+    const totalVendors = users.filter(u => u.role === UserRole.VENDOR).length;
+    const totalInstallers = users.filter(u => u.role === UserRole.INSTALLER).length;
+    const totalCustomers = users.filter(u => u.role === UserRole.CUSTOMER).length;
 
     res.json({
       totalUsers,
