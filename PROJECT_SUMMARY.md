@@ -17,7 +17,7 @@ I've successfully upgraded your e-commerce website to an **enterprise-grade appl
 └─────────────────────────────────────────────────────────┘
                            ↓ HTTP/REST API
 ┌─────────────────────────────────────────────────────────┐
-│                    BACKEND (NestJS)                      │
+│                  BACKEND (Express.js)                    │
 │  ┌─────────────────────────────────────────────────┐   │
 │  │  Auth Module      - JWT authentication          │   │
 │  │                   - Refresh tokens               │   │
@@ -71,11 +71,11 @@ E-commerce/
 │   ├── pages/                    ✅ Next.js pages
 │   └── styles/                   ✅ Global styles
 │
-├── Backend Files (NestJS)
+├── Backend Files (Express.js)
 │   ├── backend/
-│   │   ├── package.json          ✅ NestJS dependencies
+│   │   ├── package.json          ✅ Express & TypeORM dependencies
 │   │   ├── tsconfig.json         ✅ TypeScript config
-│   │   ├── nest-cli.json         ✅ NestJS CLI config
+│   │   ├── tsconfig.json         ✅ TypeScript config
 │   │   ├── .env                  ✅ Environment variables
 │   │   │
 │   │   └── src/
@@ -303,8 +303,9 @@ This architecture supports easy scaling:
 
 ## 🎓 Learning Resources
 
-### NestJS
-- Official Docs: https://docs.nestjs.com
+### Express.js
+- Official Docs: https://expressjs.com
+- TypeORM Docs: https://typeorm.io
 - Architecture: Modular, dependency injection
 - TypeScript-first design
 
@@ -329,7 +330,7 @@ This architecture supports easy scaling:
 
 ✅ Enterprise-grade e-commerce platform  
 ✅ Scalable microservices-ready architecture  
-✅ Modern tech stack (Next.js + NestJS)  
+✅ Modern tech stack (Next.js + Express.js + TypeORM)  
 ✅ Payment integration (Paystack)  
 ✅ Fast search (Meilisearch)  
 ✅ Caching (Redis)  

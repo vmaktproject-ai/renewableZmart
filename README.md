@@ -1,6 +1,6 @@
 # 🌱 RenewableZmart - Sustainable Energy E-commerce Platform
 
-A modern, Jumia-inspired e-commerce platform for sustainable energy products built with **Next.js 14**, **NestJS**, **PostgreSQL**, **Redis**, and **Meilisearch**.
+A modern, Jumia-inspired e-commerce platform for sustainable energy products built with **Next.js 14**, **Express.js**, **PostgreSQL**, and **TypeORM**.
 
 ## 🏗️ Architecture
 
@@ -10,8 +10,8 @@ A modern, Jumia-inspired e-commerce platform for sustainable energy products bui
 - **Styling**: Tailwind CSS
 - **API Client**: Axios with auth interceptors
 
-### Backend (NestJS + TypeScript)
-- **Framework**: NestJS (Enterprise Node.js)
+### Backend (Express.js + TypeScript)
+- **Framework**: Express.js with TypeORM
 - **Database**: PostgreSQL with TypeORM
 - **Caching**: Redis
 - **Search**: Meilisearch
@@ -111,7 +111,7 @@ E-commerce/
 │   ├── types/         # TypeScript types
 │   └── styles/        # Tailwind CSS
 │
-├── backend (NestJS)
+├── backend (Express.js)
 │   └── src/
 │       ├── modules/
 │       │   ├── auth/      # Authentication
