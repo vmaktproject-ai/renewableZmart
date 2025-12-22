@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Header from '../components/Header'
 import Head from 'next/head'
+import { africanCountries } from '../data/locations'
+import { validatePhoneNumber, getPhoneInfo } from '../lib/phoneValidation'
 
 interface InstallerProfile {
   id: string

@@ -60,7 +60,7 @@ export default function Home() {
 
     // Apply country filter
     if (selectedCountry && selectedCountry !== 'all') {
-      filtered = filtered.filter(p => p.country === selectedCountry)
+      filtered = filtered.filter(p => (p as any).country === selectedCountry)
     }
 
     // Apply city filter
@@ -82,10 +82,10 @@ export default function Home() {
   }, [selectedCountry, selectedCity, allProducts, searchQuery])
 
   // Get unique countries and cities from products
-  const availableCountries = ['all', ...new Set(allProducts.map(p => p.country).filter(Boolean))]
+  const availableCountries = ['all', ...new Set(allProducts.map(p => (p as any).country).filter(Boolean))]
   const availableCities = selectedCountry === 'all' 
     ? ['all'] 
-    : ['all', ...new Set(allProducts.filter(p => p.country === selectedCountry).map(p => (p as any).city).filter(Boolean))]
+    : ['all', ...new Set(allProducts.filter(p => (p as any).country === selectedCountry).map(p => (p as any).city).filter(Boolean))]
   
   return (
     <div className="bg-gray-50 min-h-screen">

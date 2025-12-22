@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Header from '../components/Header'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 interface Store {
@@ -20,11 +21,46 @@ interface Store {
   }
 }
 
+interface CurrentUser {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  accountType: string
+  businessName?: string
+  businessRegNumber?: string
+  phone?: string
+  token: string
+}
+
+interface PreviewItem {
+  name: string
+  type: string
+  url: string
+}
+
 export default function VendorsPage() {
+  const router = useRouter()
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
   const [stores, setStores] = useState<Store[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
+  const [message, setMessage] = useState('')
+  const [isVerified, setIsVerified] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [files, setFiles] = useState<File[]>([])
+  const [previews, setPreviews] = useState<PreviewItem[]>([])
+  const [formData, setFormData] = useState({
+    storeName: '',
+    email: '',
+    phone: '',
+    productName: '',
+    category: '',
+    price: '',
+    description: '',
+    stock: ''
+  })
 
   useEffect(() => {
     const user = typeof window !== 'undefined' ? localStorage.getItem('renewablezmart_current_user') : null
