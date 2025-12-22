@@ -32,6 +32,9 @@ export class User {
   lastName: string;
 
   @Column({ nullable: true })
+  name: string;
+
+  @Column({ nullable: true })
   phone: string;
 
   @Column({ nullable: true })

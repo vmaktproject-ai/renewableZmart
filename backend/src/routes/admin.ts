@@ -237,9 +237,9 @@ router.get('/stats/public', async (req, res) => {
 
     const [approvedProducts, totalVendors, totalInstallers, totalCustomers, totalStores] = await Promise.all([
       productRepo.count({ where: { approvalStatus: 'approved' } }),
-      userRepo.count({ where: { role: 'vendor' } }),
+      userRepo.count({ where: { role: UserRole.VENDOR } }),
       userRepo.count({ where: { accountType: 'installer' } }),
-      userRepo.count({ where: { role: 'customer' } }),
+      userRepo.count({ where: { role: UserRole.CUSTOMER } }),
       storeRepo.count()
     ]);
 

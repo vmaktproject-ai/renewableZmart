@@ -392,10 +392,10 @@ export const emailService = {
     try {
       await sgMail.send({
         to: options.to,
-        from: EMAIL_FROM,
+        from: EMAIL_FROM || 'noreply@example.com',
         subject: options.subject,
-        text: options.text,
-        html: options.html || options.text,
+        text: options.text || '',
+        html: options.html || options.text || '',
       });
       console.log('✉️ Email sent successfully');
     } catch (error) {
