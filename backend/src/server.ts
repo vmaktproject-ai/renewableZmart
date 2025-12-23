@@ -37,7 +37,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "http://localhost:3000", "http://127.0.0.1:3000"],
+      connectSrc: ["'self'", "http://localhost:3000", "http://127.0.0.1:3000", "https://renewable-zmart-3aam.vercel.app", "https://renewablezmart.com"],
     },
   },
   hsts: {
@@ -48,7 +48,12 @@ app.use(helmet({
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: [
+    'http://localhost:3000', 
+    'http://127.0.0.1:3000',
+    'https://renewable-zmart-3aam.vercel.app',
+    'https://renewablezmart.com'
+  ],
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' })); // Limit payload size
