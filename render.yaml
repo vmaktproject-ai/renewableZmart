@@ -36,7 +36,7 @@ services:
       - key: DATABASE_SSL
         value: true
       - key: DATABASE_SYNC
-        value: false
+        value: true
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
