@@ -11,7 +11,7 @@ export default async function handler(
     if (req.query.category) queryParams.append('category', req.query.category as string)
     if (req.query.search) queryParams.append('search', req.query.search as string)
 
-    const backendUrl = `http://localhost:4000/api/stores${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}api/stores${queryParams.toString() ? '?' + queryParams.toString() : ''}`
     
     console.log('Proxying to:', backendUrl)
     

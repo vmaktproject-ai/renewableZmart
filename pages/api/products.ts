@@ -12,7 +12,7 @@ export default async function handler(
     if (req.query.search) queryParams.append('search', req.query.search as string)
     if (req.query.storeId) queryParams.append('storeId', req.query.storeId as string)
 
-    const backendUrl = `http://localhost:4000/api/products${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}api/products${queryParams.toString() ? '?' + queryParams.toString() : ''}`
     
     console.log('Proxying products to:', backendUrl)
     
