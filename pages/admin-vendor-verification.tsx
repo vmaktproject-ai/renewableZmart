@@ -49,9 +49,10 @@ export default function AdminVendorVerification() {
   const fetchVendors = async () => {
     try {
       const token = localStorage.getItem('accessToken')
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://renewablezmart-backend.onrender.com'
       const endpoint = filter === 'pending' 
-        ? 'http://localhost:4000/api/admin/vendors/pending'
-        : 'http://localhost:4000/api/admin/vendors'
+        ? `${baseUrl}/api/admin/vendors/pending`
+        : `${baseUrl}/api/admin/vendors`
       
       const response = await fetch(endpoint, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -74,7 +75,8 @@ export default function AdminVendorVerification() {
   const handleVerify = async (vendorId: string, status: 'approved' | 'rejected') => {
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`http://localhost:4000/api/admin/vendors/${vendorId}/verify`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://renewablezmart-backend.onrender.com'
+      const response = await fetch(`${baseUrl}/api/admin/vendors/${vendorId}/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -65,7 +65,8 @@ export default function AdminProfile() {
 
         // If SA00, fetch all users for password change
         if (adminData.adminLevel === 'SA00') {
-          const usersRes = await fetch('http://localhost:4000/api/admin/users', {
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://renewablezmart-backend.onrender.com'
+          const usersRes = await fetch(`${baseUrl}/api/admin/users`, {
             headers: { 'Authorization': `Bearer ${token}` }
           })
 

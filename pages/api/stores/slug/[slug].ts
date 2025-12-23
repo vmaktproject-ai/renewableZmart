@@ -11,7 +11,7 @@ export default async function handler(
       return res.status(400).json({ error: 'Slug is required' })
     }
 
-    const backendUrl = `http://localhost:4000/api/stores/slug/${slug}`
+    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}api/stores/slug/${slug}`
     
     console.log('Proxying to:', backendUrl)
     
