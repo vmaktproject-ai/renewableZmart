@@ -13,42 +13,84 @@ const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined
 export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [currency, setCurrencyState] = useState<string>('NGN')
 
-  useEffect(() => {
-    // First, check location from localStorage to determine currency
+  // Map country names to currency codes
+  const countryToCurrency: { [key: string]: string } = {
+    'Nigeria': 'NGN',
+    'Kenya': 'KES',
+    'Ghana': 'GHS',
+    'South Africa': 'ZAR',
+    'Egypt': 'EGP',
+    'Morocco': 'MAD',
+    'Algeria': 'DZD',
+    'Tunisia': 'TND',
+    'Ethiopia': 'ETB',
+    'Tanzania': 'TZS',
+    'Uganda': 'UGX',
+    'Rwanda': 'RWF',
+    'Cameroon': 'XAF',
+    'Ivory Coast': 'XOF',
+    'Senegal': 'XOF',
+    'Mali': 'XOF',
+    'Benin': 'XOF',
+    'Burkina Faso': 'XOF',
+    'Guinea': 'GNF',
+    'Botswana': 'BWP',
+    'Namibia': 'NAD',
+    'Zambia': 'ZMW',
+    'Zimbabwe': 'ZWL',
+    'Mauritius': 'MUR',
+    'Seychelles': 'SCR'
+  }
+
+  const updateCurrencyFromLocation = () => {
     const location = localStorage.getItem('renewablezmart_location')
     if (location) {
       try {
         const { country } = JSON.parse(location)
-        // Map country to currency code
-        const countryToCurrency: { [key: string]: string } = {
-          'Nigeria': 'NGN',
-          'Kenya': 'KES',
-          'Ghana': 'GHS',
-          'South Africa': 'ZAR',
-          'Egypt': 'EGP',
-          'Morocco': 'MAD',
-          'Algeria': 'DZD',
-          'Tunisia': 'TND',
-          'Ethiopia': 'ETB',
-          'Tanzania': 'TZS',
-          'Uganda': 'UGX',
-          'Rwanda': 'RWF'
-        }
         const locationCurrency = countryToCurrency[country] || 'NGN'
         setCurrencyState(locationCurrency)
-        return
+        return locationCurrency
       } catch (e) {
         console.error('Error parsing location:', e)
       }
     }
+    return null
+  }
 
-    // Fallback to saved preference or detection
-    const savedCurrency = localStorage.getItem('preferredCurrency')
-    if (savedCurrency && currencies[savedCurrency]) {
-      setCurrencyState(savedCurrency)
-    } else {
-      const detected = detectUserCurrency()
-      setCurrencyState(detected)
+  useEffect(() => {
+    // First, try to get currency from location
+    const locationCurrency = updateCurrencyFromLocation()
+    
+    if (!locationCurrency) {
+      // Fallback to saved preference or detection
+      const savedCurrency = localStorage.getItem('preferredCurrency')
+      if (savedCurrency && currencies[savedCurrency]) {
+        setCurrencyState(savedCurrency)
+      } else {
+        const detected = detectUserCurrency()
+        setCurrencyState(detected)
+      }
+    }
+
+    // Listen for storage changes (when location is updated in another component)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'renewablezmart_location') {
+        updateCurrencyFromLocation()
+      }
+    }
+
+    // Listen for custom location change event
+    const handleLocationChanged = () => {
+      updateCurrencyFromLocation()
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange)
+      window.addEventListener('locationChanged', handleLocationChanged)
+      return () => {
+        window.removeEventListener('storage', handleStorageChange)
+        window.removeEventListener('locationChanged', handleLocationChanged)
+      }
     }
   }, [])
 

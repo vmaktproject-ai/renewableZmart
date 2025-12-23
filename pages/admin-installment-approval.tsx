@@ -50,7 +50,7 @@ export default function AdminInstallmentApproval() {
     setLoading(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/installments/all`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://renewablezmart-backend.onrender.com/'}/installments/all`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -73,7 +73,7 @@ export default function AdminInstallmentApproval() {
     setProcessing(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/installments/${appId}/approve`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://renewablezmart-backend.onrender.com/'}/installments/${appId}/approve`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export default function AdminInstallmentApproval() {
     setProcessing(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/installments/${appId}/reject`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://renewablezmart-backend.onrender.com/'}/installments/${appId}/reject`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

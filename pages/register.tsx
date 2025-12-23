@@ -24,6 +24,7 @@ interface FormState {
   yearsOfExperience: string
   serviceAreas: string
   acceptTerms: boolean
+  interestedInPaySmallSmall: boolean
 }
 
 interface Errors { [key: string]: string }
@@ -46,6 +47,7 @@ export default function Register() {
     yearsOfExperience: '',
     serviceAreas: '',
     acceptTerms: false,
+    interestedInPaySmallSmall: false,
   })
   const [errors, setErrors] = useState<Errors>({})
   const [loading, setLoading] = useState(false)
@@ -70,6 +72,7 @@ export default function Register() {
       yearsOfExperience: '',
       serviceAreas: '',
       acceptTerms: false,
+      interestedInPaySmallSmall: false,
     })
     setErrors({})
     setMessage('')
@@ -186,6 +189,7 @@ export default function Register() {
       if (formData.accountType === 'vendor') {
         registrationData.businessName = formData.businessName
         registrationData.businessRegNumber = formData.businessRegNumber
+        registrationData.interestedInPaySmallSmall = formData.interestedInPaySmallSmall
       }
 
       // Add installer-specific fields
@@ -219,6 +223,7 @@ export default function Register() {
         yearsOfExperience: '',
         serviceAreas: '',
         acceptTerms: false,
+        interestedInPaySmallSmall: false,
       })
       setErrors({})
       
@@ -231,11 +236,19 @@ export default function Register() {
       // Clear cart for new user
       localStorage.removeItem('renewablezmart_cart')
       
-      setMessage('✅ Registration successful! Redirecting...')
+      setMessage('✅ Registration successful! Auto-logging in...')
+      
+      // Route to appropriate profile update page based on account type
+      let redirectPath = '/'
+      if (formData.accountType === 'vendor') {
+        redirectPath = '/vendor-profile-update'
+      } else if (formData.accountType === 'installer') {
+        redirectPath = '/installer-profile-update'
+      }
       
       // Force full page reload to refresh cart context
       setTimeout(() => {
-        window.location.href = '/'
+        window.location.href = redirectPath
       }, 1500)
     } catch (error: any) {
       console.error('Registration error:', error)
@@ -367,6 +380,15 @@ export default function Register() {
                       {errors.businessRegNumber && <p className="text-red-500 text-xs mt-1">{errors.businessRegNumber}</p>}
                       <p className="text-xs text-gray-600 mt-1">Format: RC-XXXXXX or BN-XXXXXX (CAC Number)</p>
                     </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100 transition">
+                      <input type="checkbox" name="interestedInPaySmallSmall" checked={formData.interestedInPaySmallSmall} onChange={handleChange} className="w-5 h-5 cursor-pointer" />
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900">I am interested in "Pay Small Small" installment deals 💰</span>
+                        <p className="text-xs text-gray-600 mt-1">Allow customers to buy your products on flexible payment plans</p>
+                      </div>
+                    </label>
                   </div>
                   <div className="mt-3 bg-blue-50 border border-blue-200 rounded p-3">
                     <p className="text-xs text-blue-800">ℹ️ Your business registration will be verified before you can upload products. Ensure the number matches your CAC registration.</p>

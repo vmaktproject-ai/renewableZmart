@@ -48,7 +48,7 @@ export default function TrackOrder() {
     setTrackingData(null)
 
     try {
-      const response = await fetch(`http://localhost:4000/api/orders/${id}/tracking`)
+      const response = await fetch(`https://renewablezmart-backend.onrender.com/api/orders/${id}/tracking`)
       
       if (!response.ok) {
         throw new Error('Order not found')

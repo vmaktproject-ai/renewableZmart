@@ -5,6 +5,7 @@ import { useState, useEffect, MouseEvent } from 'react'
 import { africanCountries } from '../data/locations'
 import { getCountryCurrency } from '../lib/currency'
 import { useRouter } from 'next/router'
+import NotificationBell from './NotificationBell'
 
 interface CurrentUser {
   firstName?: string
@@ -169,6 +170,8 @@ export default function Header({ onCategoryChange }: HeaderProps = {}) {
     setSelectedCity(city)
     if (typeof window !== 'undefined') {
       localStorage.setItem('renewablezmart_location', JSON.stringify({ country, city }))
+      // Dispatch custom event to notify other components of location change
+      window.dispatchEvent(new Event('locationChanged'))
     }
     // Update currency based on selected country
     const countryCurrency = getCountryCurrency(country)
@@ -381,6 +384,9 @@ export default function Header({ onCategoryChange }: HeaderProps = {}) {
                   </div>
                 )}
               </div>
+
+              {/* Notification Bell */}
+              <NotificationBell />
 
               <Link href="/cart" className="relative flex items-center gap-2 hover:text-slate-700">
                 <span className="text-2xl">🛒</span>
