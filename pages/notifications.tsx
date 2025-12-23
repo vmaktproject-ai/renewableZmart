@@ -187,7 +187,7 @@ export default function Notifications() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">No Notifications</h3>
               <p className="text-gray-600">
                 {filter === 'all'
-                  ? 'You're all caught up! Check back later for updates.'
+                  ? "You're all caught up! Check back later for updates."
                   : `No ${getTypeLabel(filter)} notifications yet.`}
               </p>
             </div>
