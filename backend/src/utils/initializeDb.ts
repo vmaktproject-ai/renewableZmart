@@ -44,10 +44,23 @@ async function seedProducts(storeIds: string[]) {
   ];
 
   let totalProducts = 0;
+  let failureCount = 0;
 
   for (const storeId of storeIds) {
+    console.log(`   🏪 Adding products for store: ${storeId.substring(0, 8)}...`);
     for (const product of products) {
       try {
+        // First check if this product already exists for this store
+        const existingProduct = await AppDataSource.query(
+          'SELECT id FROM products WHERE name = $1 AND "storeId" = $2 LIMIT 1',
+          [product.name, storeId]
+        );
+        
+        if (existingProduct && existingProduct.length > 0) {
+          console.log(`      ⏭️  Product ${product.name} already exists, skipping`);
+          continue;
+        }
+
         await AppDataSource.query(`
           INSERT INTO products (name, description, price, category, stock, "storeId", country, city, "approvalStatus", "isActive", "createdAt", "updatedAt")
           VALUES ($1, $2, $3, $4, $5, $6, 'Nigeria', 'Lagos', 'approved', true, NOW(), NOW())
@@ -60,13 +73,15 @@ async function seedProducts(storeIds: string[]) {
           storeId
         ]);
         totalProducts++;
+        console.log(`      ✅ Created: ${product.name}`);
       } catch (error: any) {
-        console.error(`  ⚠️  Failed to create product ${product.name}:`, error.message);
+        failureCount++;
+        console.error(`      ❌ Failed to create ${product.name}: ${error.message}`);
       }
     }
   }
 
-  console.log(`✅ Created ${totalProducts} products`);
+  console.log(`✅ Created ${totalProducts} products (${failureCount} failures)`);
   return totalProducts;
 }
 
