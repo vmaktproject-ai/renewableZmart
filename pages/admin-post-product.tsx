@@ -4,6 +4,7 @@ import Header from '../components/Header'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { africanCountries } from '../data/locations'
+import { getApiBaseUrl } from '@/lib/apiConfig'
 
 interface Store {
   id: string
@@ -51,7 +52,8 @@ export default function AdminPostProduct() {
   const fetchStores = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:4000/api/admin/stores/verified', {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/admin/stores/verified`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
 
@@ -70,7 +72,8 @@ export default function AdminPostProduct() {
 
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:4000/api/admin/products/create', {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/admin/products/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

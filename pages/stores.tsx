@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard'
 import Link from 'next/link'
 import { productService } from '@/lib/services'
 import { useCurrency } from '../context/CurrencyContext'
+import { getApiBaseUrl } from '@/lib/apiConfig'
 import type { CatalogProduct } from '../types'
 
 interface Store {
@@ -41,8 +42,10 @@ export default function Stores() {
 
     const fetchStoresAndProducts = async () => {
       try {
+        const apiBase = getApiBaseUrl()
+        
         // Fetch stores
-        const storesResponse = await fetch('/api/stores')
+        const storesResponse = await fetch(`${apiBase}/stores`)
         if (storesResponse.ok) {
           const storesData = await storesResponse.json()
           console.log('Stores fetched:', storesData)
@@ -53,7 +56,7 @@ export default function Stores() {
         }
 
         // Fetch all vendor products (without approval filter)
-        const productsResponse = await fetch('http://localhost:4000/api/products/all-vendor')
+        const productsResponse = await fetch(`${apiBase}/products/all-vendor`)
         if (productsResponse.ok) {
           const productsData = await productsResponse.json()
           console.log('Vendor products fetched:', productsData?.length || 0)

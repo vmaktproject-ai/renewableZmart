@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import Header from '../components/Header'
 import Link from 'next/link'
+import { getApiBaseUrl } from '@/lib/apiConfig'
 
 interface Installer {
   id: number
@@ -37,7 +38,8 @@ export default function Installers() {
 
     const fetchInstallers = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/installers')
+        const apiBase = getApiBaseUrl()
+        const response = await fetch(`${apiBase}/installers`)
         if (response.ok) {
           const data = await response.json()
           setInstallers(data)

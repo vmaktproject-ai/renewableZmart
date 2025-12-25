@@ -4,6 +4,7 @@ import Header from '../components/Header'
 import Head from 'next/head'
 import { africanCountries } from '../data/locations'
 import { validatePhoneNumber, getPhoneInfo } from '../lib/phoneValidation'
+import { getApiBaseUrl } from '@/lib/apiConfig'
 
 interface InstallerProfile {
   id: string
@@ -91,7 +92,8 @@ export default function InstallerDashboard() {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:4000/api/users/profile', {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/users/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -127,7 +129,8 @@ export default function InstallerDashboard() {
   const fetchProjects = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:4000/api/installer/projects', {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/installer/projects`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -168,7 +171,8 @@ export default function InstallerDashboard() {
       const formData = new FormData()
       formData.append('profilePhoto', profilePhotoFile)
 
-      const response = await fetch('http://localhost:4000/api/users/profile-photo', {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/users/profile-photo`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -205,7 +209,8 @@ export default function InstallerDashboard() {
 
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:4000/api/users/profile', {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/users/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -246,7 +251,8 @@ export default function InstallerDashboard() {
         formData.append('images', file)
       })
 
-      const response = await fetch('http://localhost:4000/api/installer/projects', {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/installer/projects`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

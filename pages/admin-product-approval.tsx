@@ -4,6 +4,7 @@ import Header from '../components/Header'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCurrency } from '../context/CurrencyContext'
+import { getApiBaseUrl } from '@/lib/apiConfig'
 
 interface Product {
   id: string
@@ -54,7 +55,8 @@ export default function AdminProductApproval() {
 
   const fetchPendingProducts = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:4000/api/admin/products/pending', {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/admin/products/pending`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
 
@@ -73,7 +75,8 @@ export default function AdminProductApproval() {
   const handleApproval = async (productId: string, approved: boolean) => {
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`http://localhost:4000/api/admin/approve-product/${productId}`, {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/admin/approve-product/${productId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

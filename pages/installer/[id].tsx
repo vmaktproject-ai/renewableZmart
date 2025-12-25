@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Header from '../../components/Header'
 import Link from 'next/link'
+import { getApiBaseUrl } from '@/lib/apiConfig'
 
 interface InstallerProfile {
   id: string
@@ -76,7 +77,8 @@ export default function InstallerProfile() {
 
   const fetchInstallerProfile = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/installers/${id}`)
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/installers/${id}`)
       if (response.ok) {
         const data = await response.json()
         setInstaller(data)
@@ -90,7 +92,8 @@ export default function InstallerProfile() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/installers/${id}/projects`)
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/installers/${id}/projects`)
       if (response.ok) {
         const data = await response.json()
         setProjects(data)
@@ -102,7 +105,8 @@ export default function InstallerProfile() {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/installers/${id}/reviews`)
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/installers/${id}/reviews`)
       if (response.ok) {
         const data = await response.json()
         setReviews(data)
@@ -116,7 +120,8 @@ export default function InstallerProfile() {
     e.preventDefault()
     
     try {
-      const response = await fetch(`http://localhost:4000/api/installers/${id}/contact`, {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/installers/${id}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

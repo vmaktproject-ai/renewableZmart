@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Header from '../components/Header'
 import PasswordInput from '../components/PasswordInput'
 import { useRouter } from 'next/router'
+import { getApiBaseUrl } from '@/lib/apiConfig'
 
 interface AdminInfo {
   id: string
@@ -55,8 +56,10 @@ export default function AdminProfile() {
 
   const fetchAdminInfo = async (token: string) => {
     try {
+      const apiBase = getApiBaseUrl()
+      
       // Get current admin info
-      const adminRes = await fetch('http://localhost:4000/api/admin/me', {
+      const adminRes = await fetch(`${apiBase}/admin/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
 
@@ -66,8 +69,7 @@ export default function AdminProfile() {
 
         // If SA00, fetch all users for password change
         if (adminData.adminLevel === 'SA00') {
-          const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://renewablezmart-backend.onrender.com'
-          const usersRes = await fetch(`${baseUrl}/api/admin/users`, {
+          const usersRes = await fetch(`${apiBase}/admin/users`, {
             headers: { 'Authorization': `Bearer ${token}` }
           })
 
@@ -107,7 +109,8 @@ export default function AdminProfile() {
 
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`http://localhost:4000/api/admin/change-password/${selectedUserId}`, {
+      const apiBase = getApiBaseUrl()
+      const response = await fetch(`${apiBase}/admin/change-password/${selectedUserId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
