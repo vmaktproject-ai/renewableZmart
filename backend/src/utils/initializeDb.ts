@@ -87,6 +87,15 @@ async function seedProducts(storeIds: string[]) {
 
 export async function initializeDatabase() {
   try {
+    // Check if seeding is enabled (disabled by default in production)
+    const seedingEnabled = process.env.ENABLE_AUTO_SEEDING === 'true';
+    
+    if (!seedingEnabled && process.env.NODE_ENV === 'production') {
+      console.log('⏭️  Auto-seeding disabled for production. Skipping seeding.');
+      console.log('   📝 Use POST /api/force-seed-database endpoint for manual seeding');
+      return;
+    }
+    
     console.log('🌱 Checking if database needs seeding...');
     
     // Check if we have any stores
