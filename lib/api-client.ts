@@ -1,27 +1,24 @@
 import axios from 'axios';
 import { getApiBaseUrl } from './apiConfig';
 
-const getBaseURL = () => {
-  // For server-side, return the default
-  if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
-  }
-  
-  // For client-side, use the dynamic function
-  return getApiBaseUrl();
-};
-
+// Create a base axios instance - baseURL will be set dynamically
 export const apiClient = axios.create({
-  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
 });
 
-// Request interceptor to add auth token
+// Request interceptor to set dynamic baseURL and add auth token
 apiClient.interceptors.request.use(
   (config) => {
+    // Set baseURL dynamically for each request
+    if (typeof window !== 'undefined') {
+      config.baseURL = getApiBaseUrl();
+    } else {
+      config.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+    }
+    
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
