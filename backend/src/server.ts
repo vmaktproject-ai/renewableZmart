@@ -20,6 +20,7 @@ import adminRoutes from './routes/admin';
 import installmentRoutes from './routes/installments';
 import { emailService } from './services/emailService';
 import { initializeDatabase } from './utils/initializeDb';
+import { forceInsertProducts } from './utils/forceInsertProducts';
 
 // Load environment variables
 config();
@@ -137,6 +138,21 @@ app.post('/api/seed-database', async (req, res) => {
     console.log('🌱 Manual seed endpoint called');
     await initializeDatabase();
     res.json({ ok: true, message: 'Database seeded successfully' });
+  } catch (error: any) {
+    res.status(500).json({ ok: false, error: error.message });
+  }
+});
+
+// Force insert products endpoint
+app.post('/api/force-insert-products', async (req, res) => {
+  try {
+    console.log('💪 Force insert products endpoint called');
+    const result = await forceInsertProducts();
+    if (result.ok) {
+      res.json(result);
+    } else {
+      res.status(500).json(result);
+    }
   } catch (error: any) {
     res.status(500).json({ ok: false, error: error.message });
   }
