@@ -1,9 +1,18 @@
 import axios from 'axios';
+import { getApiBaseUrl } from './apiConfig';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+const getBaseURL = () => {
+  // For server-side, return the default
+  if (typeof window === 'undefined') {
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+  }
+  
+  // For client-side, use the dynamic function
+  return getApiBaseUrl();
+};
 
 export const apiClient = axios.create({
-  baseURL: API_URL,
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -35,7 +44,8 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refreshToken');
-        const response = await axios.post(`${API_URL}/auth/refresh`, {
+        const baseURL = getApiBaseUrl();
+        const response = await axios.post(`${baseURL}/auth/refresh`, {
           refreshToken,
         });
 
