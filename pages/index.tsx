@@ -19,6 +19,7 @@ export default function Home() {
   const [selectedCity, setSelectedCity] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const { formatPrice } = useCurrency()
+  // Vercel Deploy Check: v3
 
   // Handle search from URL query
   useEffect(() => {
