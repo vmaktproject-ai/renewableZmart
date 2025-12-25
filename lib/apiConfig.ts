@@ -9,7 +9,12 @@ export const getApiBaseUrl = () => {
     return process.env.NEXT_PUBLIC_API_URL
   }
   
-  // For client-side, use current host
+  // Production fallback
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return 'https://renewablezmart-backend.onrender.com/api'
+  }
+  
+  // For client-side local development
   if (typeof window !== 'undefined') {
     return `${window.location.protocol}//${window.location.hostname}:4000/api`
   }
@@ -19,12 +24,17 @@ export const getApiBaseUrl = () => {
 }
 
 export const getBackendBaseUrl = () => {
-  // Try environment variable first (remove /api suffix)
+  // Try environment variable first
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL.replace('/api', '')
   }
   
-  // For client-side, use current host
+  // Production fallback
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return 'https://renewablezmart-backend.onrender.com'
+  }
+  
+  // For client-side local development
   if (typeof window !== 'undefined') {
     return `${window.location.protocol}//${window.location.hostname}:4000`
   }
