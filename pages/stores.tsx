@@ -44,12 +44,13 @@ export default function Stores() {
     const fetchStoresAndProducts = async () => {
       try {
         const apiBase = getApiBaseUrl()
+        console.log('API Base URL:', apiBase)
         
         // Fetch stores
         const storesResponse = await fetch(`${apiBase}/stores`)
         if (storesResponse.ok) {
           const storesData = await storesResponse.json()
-          console.log('Stores fetched:', storesData)
+          console.log('Stores fetched successfully:', storesData.length)
           setStores(storesData)
         } else {
           console.error('Stores response not ok:', storesResponse.status)
