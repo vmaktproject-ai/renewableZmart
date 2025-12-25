@@ -19,6 +19,7 @@ import installerRoutes from './routes/installers';
 import adminRoutes from './routes/admin';
 import installmentRoutes from './routes/installments';
 import { emailService } from './services/emailService';
+import { initializeDatabase } from './utils/initializeDb';
 
 // Load environment variables
 config();
@@ -140,9 +141,12 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 // Initialize database and start server
 AppDataSource.initialize()
-  .then(() => {
+  .then(async () => {
     console.log('✅ Database connected successfully');
     console.log('📊 TypeORM initialized');
+
+    // Initialize database with seed data if empty
+    await initializeDatabase();
 
     const server = app.listen(PORT, () => {
       console.log(`🚀 Express server running on http://localhost:${PORT}`);
