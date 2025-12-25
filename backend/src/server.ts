@@ -158,6 +158,118 @@ app.post('/api/force-insert-products', async (req, res) => {
   }
 });
 
+// Clean up seed data endpoint
+app.post('/api/cleanup-seed-data', async (req, res) => {
+  try {
+    console.log('🧹 Cleanup seed data endpoint called');
+    
+    if (!AppDataSource.isInitialized) {
+      throw new Error('Database not initialized');
+    }
+
+    const seedProductNames = [
+      '500W Solar Panel Kit',
+      '5KW Inverter System',
+      '200Ah Lithium Battery',
+      'Solar Water Pump',
+      '2KW Wind Turbine',
+      'Hybrid Solar Inverter 3KW',
+      '150W Solar Light Kit',
+      'Wind Charge Controller'
+    ];
+
+    // Delete seed products
+    const deleteProductsResult = await AppDataSource.query(
+      `DELETE FROM products WHERE name = ANY($1)`,
+      [seedProductNames]
+    );
+    console.log(`✅ Deleted ${deleteProductsResult.rowCount} seed products`);
+
+    // Find orphaned stores (stores with no products)
+    const orphanedStores = await AppDataSource.query(
+      `SELECT stores.id FROM stores 
+       LEFT JOIN products ON stores.id = products."storeId" 
+       WHERE products."storeId" IS NULL 
+       GROUP BY stores.id`
+    );
+
+    // Delete orphaned stores
+    let deletedStores = 0;
+    if (orphanedStores && orphanedStores.length > 0) {
+      const orphanIds = orphanedStores.map((s: any) => s.id);
+      const deleteStoresResult = await AppDataSource.query(
+        'DELETE FROM stores WHERE id = ANY($1)',
+        [orphanIds]
+      );
+      deletedStores = deleteStoresResult.rowCount || 0;
+      console.log(`✅ Deleted ${deletedStores} orphaned stores`);
+    }
+
+    // Delete test vendor
+    let deletedVendor = 0;
+    try {
+      const deleteVendorResult = await AppDataSource.query(
+        `DELETE FROM users WHERE email = 'vendor@test.com'`
+      );
+      deletedVendor = deleteVendorResult.rowCount || 0;
+      if (deletedVendor > 0) {
+        console.log('✅ Deleted test vendor account');
+      }
+    } catch (e) {
+      console.log('⚠️  Could not delete test vendor (may not exist)');
+    }
+
+    // Verify cleanup
+    const storesCount = await AppDataSource.query('SELECT COUNT(*) as count FROM stores');
+    const productsCount = await AppDataSource.query('SELECT COUNT(*) as count FROM products');
+    const usersCount = await AppDataSource.query('SELECT COUNT(*) as count FROM users');
+
+    res.json({
+      ok: true,
+      message: 'Seed data cleaned up successfully',
+      removed: {
+        products: deleteProductsResult.rowCount || 0,
+        stores: deletedStores,
+        vendors: deletedVendor
+      },
+      remaining: {
+        stores: parseInt(storesCount[0].count),
+        products: parseInt(productsCount[0].count),
+        users: parseInt(usersCount[0].count)
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ ok: false, error: error.message });
+  }
+});
+
+// Database status endpoint
+app.get('/api/database-status', async (req, res) => {
+  try {
+    if (!AppDataSource.isInitialized) {
+      return res.json({ ok: false, message: 'Database not initialized' });
+    }
+
+    const storesCount = await AppDataSource.query('SELECT COUNT(*) as count FROM stores');
+    const productsCount = await AppDataSource.query('SELECT COUNT(*) as count FROM products');
+    const usersCount = await AppDataSource.query('SELECT COUNT(*) as count FROM users');
+    const ordersCount = await AppDataSource.query('SELECT COUNT(*) as count FROM orders');
+
+    res.json({
+      ok: true,
+      database: 'connected',
+      data: {
+        stores: parseInt(storesCount[0].count),
+        products: parseInt(productsCount[0].count),
+        users: parseInt(usersCount[0].count),
+        orders: parseInt(ordersCount[0].count)
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ ok: false, error: error.message });
+  }
+});
+
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
