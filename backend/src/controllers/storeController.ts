@@ -12,8 +12,8 @@ export const getAllStores = async (req: AuthRequest, res: Response) => {
     const { country, category, search } = req.query;
 
     const queryBuilder = storeRepository.createQueryBuilder('store')
-      .leftJoinAndSelect('store.owner', 'owner')
-      .where('store.isActive = :isActive', { isActive: true });
+      .leftJoinAndSelect('store.owner', 'owner');
+      // Removed isActive filter to show all stores
 
     if (country) {
       queryBuilder.andWhere('store.country = :country', { country });

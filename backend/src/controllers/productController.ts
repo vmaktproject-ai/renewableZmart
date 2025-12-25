@@ -16,15 +16,14 @@ export const getAllProducts = async (req: Request, res: Response) => {
 
     let products;
     if (country) {
-      // Only show approved products on landing page
+      // Show all products (removed approval filter for now)
       products = await productRepository.find({
-        where: { country: country as string, approvalStatus: 'approved' },
+        where: { country: country as string },
         relations: ['store'],
       });
     } else {
-      // Only show approved products on landing page
+      // Show all products (removed approval filter for now)
       products = await productRepository.find({ 
-        where: { approvalStatus: 'approved' },
         relations: ['store'] 
       });
     }
