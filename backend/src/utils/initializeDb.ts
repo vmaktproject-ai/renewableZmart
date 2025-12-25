@@ -1,20 +1,108 @@
 import { AppDataSource } from '../config/database';
 import bcrypt from 'bcrypt';
 
+// Helper function to seed products for given stores
+async function seedProducts(storeIds: string[]) {
+  console.log('📦 Creating sample products...');
+
+  const products = [
+    {
+      name: '500W Solar Panel Kit',
+      description: 'High-efficiency 500W solar panel with mounting bracket',
+      price: 450000,
+      category: 'Solar Panels',
+      stock: 25
+    },
+    {
+      name: '5KW Inverter System',
+      description: 'Pure sine wave 5KW inverter for power backup',
+      price: 650000,
+      category: 'Inverters',
+      stock: 15
+    },
+    {
+      name: '200Ah Lithium Battery',
+      description: 'LiFePO4 200Ah battery for energy storage',
+      price: 850000,
+      category: 'Batteries',
+      stock: 10
+    },
+    {
+      name: 'Solar Water Pump',
+      description: 'Efficient 1HP solar water pump',
+      price: 280000,
+      category: 'Water Systems',
+      stock: 20
+    },
+    {
+      name: '2KW Wind Turbine',
+      description: 'Compact 2KW wind turbine for residential use',
+      price: 920000,
+      category: 'Wind Energy',
+      stock: 8
+    }
+  ];
+
+  let totalProducts = 0;
+
+  for (const storeId of storeIds) {
+    for (const product of products) {
+      try {
+        await AppDataSource.query(`
+          INSERT INTO products (name, description, price, category, stock, "storeId", country, city, "approvalStatus", "isActive", "createdAt", "updatedAt")
+          VALUES ($1, $2, $3, $4, $5, $6, 'Nigeria', 'Lagos', 'approved', true, NOW(), NOW())
+        `, [
+          product.name,
+          product.description,
+          product.price,
+          product.category,
+          product.stock,
+          storeId
+        ]);
+        totalProducts++;
+      } catch (error: any) {
+        console.error(`  ⚠️  Failed to create product ${product.name}:`, error.message);
+      }
+    }
+  }
+
+  console.log(`✅ Created ${totalProducts} products`);
+  return totalProducts;
+}
+
 export async function initializeDatabase() {
   try {
     console.log('🌱 Checking if database needs seeding...');
     
     // Check if we have any stores
     const storeCountResult = await AppDataSource.query('SELECT COUNT(*) as count FROM stores');
-    const count = parseInt(storeCountResult[0].count);
+    const storeCount = parseInt(storeCountResult[0].count);
     
-    if (count > 0) {
-      console.log(`✅ Database already initialized with ${count} stores`);
+    // Check if we have any products
+    const productCountResult = await AppDataSource.query('SELECT COUNT(*) as count FROM products');
+    const productCount = parseInt(productCountResult[0].count);
+    
+    // If we have stores but no products, just seed products
+    if (storeCount > 0 && productCount > 0) {
+      console.log(`✅ Database already initialized with ${storeCount} stores and ${productCount} products`);
       return;
     }
 
-    console.log('📝 Database is empty. Starting data seeding...');
+    if (storeCount > 0 && productCount === 0) {
+      console.log(`📝 Found ${storeCount} stores but no products. Seeding products...`);
+      // Get existing stores and seed products
+      const storeIds: string[] = [];
+      const storeResult = await AppDataSource.query('SELECT id FROM stores LIMIT 100');
+      storeIds.push(...storeResult.map((r: any) => r.id));
+      
+      if (storeIds.length > 0) {
+        await seedProducts(storeIds);
+        console.log('✨ Database seeding complete!');
+      }
+      return;
+    }
+
+    console.log('📝 Database is empty. Starting full data seeding...');
 
     // Step 1: Create or get vendor user
     let vendorId: string | null = null;
@@ -109,74 +197,12 @@ export async function initializeDatabase() {
 
     console.log(`✅ Created ${storeIds.length} stores`);
 
-    // Step 3: Create sample products for each store
-    console.log('📦 Creating sample products...');
+    // Step 3: Create products
+    const newProductCount = await seedProducts(storeIds);
 
-    const products = [
-      {
-        name: '500W Solar Panel Kit',
-        description: 'High-efficiency 500W solar panel with mounting bracket',
-        price: 450000,
-        category: 'Solar Panels',
-        stock: 25
-      },
-      {
-        name: '5KW Inverter System',
-        description: 'Pure sine wave 5KW inverter for power backup',
-        price: 650000,
-        category: 'Inverters',
-        stock: 15
-      },
-      {
-        name: '200Ah Lithium Battery',
-        description: 'LiFePO4 200Ah battery for energy storage',
-        price: 850000,
-        category: 'Batteries',
-        stock: 10
-      },
-      {
-        name: 'Solar Water Pump',
-        description: 'Efficient 1HP solar water pump',
-        price: 280000,
-        category: 'Water Systems',
-        stock: 20
-      },
-      {
-        name: '2KW Wind Turbine',
-        description: 'Compact 2KW wind turbine for residential use',
-        price: 920000,
-        category: 'Wind Energy',
-        stock: 8
-      }
-    ];
-
-    let totalProducts = 0;
-
-    for (const storeId of storeIds) {
-      for (const product of products) {
-        try {
-          await AppDataSource.query(`
-            INSERT INTO products (name, description, price, category, stock, "storeId", country, city, "approvalStatus", "isActive", "createdAt", "updatedAt")
-            VALUES ($1, $2, $3, $4, $5, $6, 'Nigeria', 'Lagos', 'approved', true, NOW(), NOW())
-          `, [
-            product.name,
-            product.description,
-            product.price,
-            product.category,
-            product.stock,
-            storeId
-          ]);
-          totalProducts++;
-        } catch (error: any) {
-          console.error(`  ⚠️  Failed to create product ${product.name}:`, error.message);
-        }
-      }
-    }
-
-    console.log(`✅ Created ${totalProducts} products`);
     console.log('\n✨ Database seeding complete!');
     console.log(`   📊 Stores: ${storeIds.length}`);
-    console.log(`   📦 Products: ${totalProducts}`);
+    console.log(`   📦 Products: ${newProductCount}`);
     
   } catch (error: any) {
     console.error('❌ Database initialization failed:', error.message);
