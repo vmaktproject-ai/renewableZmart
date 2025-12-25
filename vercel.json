@@ -1,0 +1,8 @@
+{
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://renewablezmart-backend.onrender.com/api"
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install"
+}

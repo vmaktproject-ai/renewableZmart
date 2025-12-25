@@ -14,9 +14,11 @@ apiClient.interceptors.request.use(
   (config) => {
     // Set baseURL dynamically for each request
     if (typeof window !== 'undefined') {
+      // Client-side: use dynamic detection
       config.baseURL = getApiBaseUrl();
     } else {
-      config.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+      // Server-side: use environment variable or Vercel config
+      config.baseURL = process.env.NEXT_PUBLIC_API_URL || 'https://renewablezmart-backend.onrender.com/api';
     }
     
     const token = localStorage.getItem('accessToken');
