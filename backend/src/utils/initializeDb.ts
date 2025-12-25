@@ -3,140 +3,184 @@ import bcrypt from 'bcrypt';
 
 export async function initializeDatabase() {
   try {
-    // Check if we have any stores
-    const storeRepository = AppDataSource.getRepository('Store');
-    const storeCount = await AppDataSource.query('SELECT COUNT(*) as count FROM stores');
+    console.log('🌱 Checking if database needs seeding...');
     
-    if (storeCount[0].count > 0) {
-      console.log(`✅ Database already initialized with ${storeCount[0].count} stores`);
+    // Check if we have any stores
+    const storeCountResult = await AppDataSource.query('SELECT COUNT(*) as count FROM stores');
+    const count = parseInt(storeCountResult[0].count);
+    
+    if (count > 0) {
+      console.log(`✅ Database already initialized with ${count} stores`);
       return;
     }
 
-    console.log('🌱 Initializing database with seed data...');
+    console.log('📝 Database is empty. Starting data seeding...');
 
-    // Create a vendor user
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    // Step 1: Create or get vendor user
+    let vendorId: string | null = null;
     
-    const vendorResult = await AppDataSource.query(`
-      INSERT INTO users (email, password, "firstName", "lastName", "businessName", role, country, city, "isVerified", "createdAt", "updatedAt")
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, NOW(), NOW())
-      ON CONFLICT (email) DO UPDATE SET "updatedAt" = NOW()
-      RETURNING id
-    `, [
-      'vendor@test.com',
-      hashedPassword,
-      'Test',
-      'Vendor',
-      'Test Store',
-      'vendor',
-      'Nigeria',
-      'Lagos'
-    ]);
-
-    const vendorId = vendorResult[0]?.id;
-
-    if (!vendorId) {
-      // Try to get existing vendor
+    try {
+      // First try to get existing vendor
       const existingVendor = await AppDataSource.query(
-        'SELECT id FROM users WHERE email = $1',
+        'SELECT id FROM users WHERE email = $1 LIMIT 1',
         ['vendor@test.com']
       );
       
-      if (!existingVendor[0]) {
-        throw new Error('Failed to create vendor');
+      if (existingVendor && existingVendor.length > 0) {
+        vendorId = existingVendor[0].id;
+        console.log('✅ Using existing vendor user:', vendorId);
       }
-      
-      console.log('✅ Using existing vendor');
-    } else {
-      console.log('✅ Created test vendor:', vendorId);
+    } catch (e) {
+      console.log('⚠️  Could not find existing vendor, will create new one');
     }
 
-    // Create stores
-    const stores = [
+    // If vendor doesn't exist, create one
+    if (!vendorId) {
+      try {
+        const hashedPassword = await bcrypt.hash('password123', 10);
+        const vendorResult = await AppDataSource.query(`
+          INSERT INTO users (email, password, "firstName", "lastName", "businessName", role, country, city, "isVerified", "createdAt", "updatedAt")
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, NOW(), NOW())
+          RETURNING id
+        `, [
+          'vendor@test.com',
+          hashedPassword,
+          'Test',
+          'Vendor',
+          'Renewable Energy Store',
+          'vendor',
+          'Nigeria',
+          'Lagos'
+        ]);
+
+        if (vendorResult && vendorResult.length > 0) {
+          vendorId = vendorResult[0].id;
+          console.log('✅ Created new vendor user:', vendorId);
+        }
+      } catch (error: any) {
+        console.error('❌ Error creating vendor:', error.message);
+        throw error;
+      }
+    }
+
+    if (!vendorId) {
+      throw new Error('Failed to get or create vendor user');
+    }
+
+    // Step 2: Create stores
+    console.log('🏪 Creating stores...');
+    const storeNames = [
+      'Solar Tech Store',
+      'Green Energy Hub',
+      'Renewable Power Solutions'
+    ];
+
+    const storeIds: string[] = [];
+
+    for (const storeName of storeNames) {
+      try {
+        const slug = storeName.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+        
+        const storeResult = await AppDataSource.query(`
+          INSERT INTO stores (name, description, "ownerId", slug, country, city, "isActive", "isVerified", "verificationStatus", "createdAt", "updatedAt")
+          VALUES ($1, $2, $3, $4, $5, $6, true, true, 'approved', NOW(), NOW())
+          RETURNING id
+        `, [
+          storeName,
+          `Premium renewable energy products from ${storeName}`,
+          vendorId,
+          slug,
+          'Nigeria',
+          'Lagos'
+        ]);
+
+        if (storeResult && storeResult.length > 0) {
+          storeIds.push(storeResult[0].id);
+          console.log(`  ✅ ${storeName}`);
+        }
+      } catch (error: any) {
+        console.error(`  ❌ Failed to create ${storeName}:`, error.message);
+      }
+    }
+
+    if (storeIds.length === 0) {
+      throw new Error('Failed to create any stores');
+    }
+
+    console.log(`✅ Created ${storeIds.length} stores`);
+
+    // Step 3: Create sample products for each store
+    console.log('📦 Creating sample products...');
+
+    const products = [
       {
-        name: 'Solar Tech Store',
-        slug: 'solar-tech-store-1',
-        description: 'Premium renewable energy products and solutions for residential and commercial use'
+        name: '500W Solar Panel Kit',
+        description: 'High-efficiency 500W solar panel with mounting bracket',
+        price: 450000,
+        category: 'Solar Panels',
+        stock: 25
       },
       {
-        name: 'Green Energy Hub',
-        slug: 'green-energy-hub-1',
-        description: 'Leading provider of eco-friendly energy solutions and sustainable products'
+        name: '5KW Inverter System',
+        description: 'Pure sine wave 5KW inverter for power backup',
+        price: 650000,
+        category: 'Inverters',
+        stock: 15
       },
       {
-        name: 'Renewable Power Solutions',
-        slug: 'renewable-power-solutions-1',
-        description: 'Complete renewable energy systems and installation services'
+        name: '200Ah Lithium Battery',
+        description: 'LiFePO4 200Ah battery for energy storage',
+        price: 850000,
+        category: 'Batteries',
+        stock: 10
+      },
+      {
+        name: 'Solar Water Pump',
+        description: 'Efficient 1HP solar water pump',
+        price: 280000,
+        category: 'Water Systems',
+        stock: 20
+      },
+      {
+        name: '2KW Wind Turbine',
+        description: 'Compact 2KW wind turbine for residential use',
+        price: 920000,
+        category: 'Wind Energy',
+        stock: 8
       }
     ];
 
-    for (const store of stores) {
-      await AppDataSource.query(`
-        INSERT INTO stores (name, description, "ownerId", slug, country, city, "isActive", "isVerified", "verificationStatus", "createdAt", "updatedAt")
-        VALUES ($1, $2, $3, $4, $5, $6, true, true, 'approved', NOW(), NOW())
-        ON CONFLICT (slug) DO UPDATE SET "updatedAt" = NOW()
-      `, [
-        store.name,
-        store.description,
-        vendorId,
-        store.slug,
-        'Nigeria',
-        'Lagos'
-      ]);
-    }
+    let totalProducts = 0;
 
-    console.log('✅ Created seed stores');
-
-    // Create sample products
-    const storeResult = await AppDataSource.query('SELECT id FROM stores LIMIT 1');
-    const storeId = storeResult[0]?.id;
-
-    if (storeId) {
-      const products = [
-        {
-          name: '500W Solar Panel Kit',
-          description: 'High-efficiency 500W solar panel with mounting bracket and cables',
-          price: 450000,
-          category: 'Solar Panels',
-          stock: 25
-        },
-        {
-          name: '5KW Inverter System',
-          description: 'Pure sine wave 5KW inverter for reliable power backup',
-          price: 650000,
-          category: 'Inverters',
-          stock: 15
-        },
-        {
-          name: '200Ah Lithium Battery',
-          description: 'LiFePO4 200Ah battery for long-lasting energy storage',
-          price: 850000,
-          category: 'Batteries',
-          stock: 10
-        }
-      ];
-
+    for (const storeId of storeIds) {
       for (const product of products) {
-        await AppDataSource.query(`
-          INSERT INTO products (name, description, price, category, stock, "storeId", country, city, "approvalStatus", "isActive", "createdAt", "updatedAt")
-          VALUES ($1, $2, $3, $4, $5, $6, 'Nigeria', 'Lagos', 'approved', true, NOW(), NOW())
-          ON CONFLICT DO NOTHING
-        `, [
-          product.name,
-          product.description,
-          product.price,
-          product.category,
-          product.stock,
-          storeId
-        ]);
+        try {
+          await AppDataSource.query(`
+            INSERT INTO products (name, description, price, category, stock, "storeId", country, city, "approvalStatus", "isActive", "createdAt", "updatedAt")
+            VALUES ($1, $2, $3, $4, $5, $6, 'Nigeria', 'Lagos', 'approved', true, NOW(), NOW())
+          `, [
+            product.name,
+            product.description,
+            product.price,
+            product.category,
+            product.stock,
+            storeId
+          ]);
+          totalProducts++;
+        } catch (error: any) {
+          console.error(`  ⚠️  Failed to create product ${product.name}:`, error.message);
+        }
       }
-
-      console.log('✅ Created seed products');
     }
 
-    console.log('✨ Database initialization complete!');
-  } catch (error) {
-    console.error('❌ Database initialization error:', error);
-    // Don't exit - let the server continue even if seeding fails
+    console.log(`✅ Created ${totalProducts} products`);
+    console.log('\n✨ Database seeding complete!');
+    console.log(`   📊 Stores: ${storeIds.length}`);
+    console.log(`   📦 Products: ${totalProducts}`);
+    
+  } catch (error: any) {
+    console.error('❌ Database initialization failed:', error.message);
+    console.error('Stack:', error.stack);
+    // Don't throw - let the server continue even if seeding fails
   }
 }
