@@ -26,6 +26,7 @@ export default function Stores() {
   const [stores, setStores] = useState<Store[]>([])
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [loading, setLoading] = useState(true)
+  // Force redeployment - v2
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('Nigeria')
   const [selectedCity, setSelectedCity] = useState('all')
