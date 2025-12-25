@@ -131,6 +131,17 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Express backend is running' });
 });
 
+// Manual seed endpoint (for emergency database population)
+app.post('/api/seed-database', async (req, res) => {
+  try {
+    console.log('🌱 Manual seed endpoint called');
+    await initializeDatabase();
+    res.json({ ok: true, message: 'Database seeded successfully' });
+  } catch (error: any) {
+    res.status(500).json({ ok: false, error: error.message });
+  }
+});
+
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
