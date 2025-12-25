@@ -92,12 +92,19 @@ export async function initializeDatabase() {
       console.log(`📝 Found ${storeCount} stores but no products. Seeding products...`);
       // Get existing stores and seed products
       const storeIds: string[] = [];
-      const storeResult = await AppDataSource.query('SELECT id FROM stores LIMIT 100');
-      storeIds.push(...storeResult.map((r: any) => r.id));
+      try {
+        const storeResult = await AppDataSource.query('SELECT id FROM stores LIMIT 100');
+        console.log(`   📊 Found ${storeResult.length} store IDs to seed products for`);
+        storeIds.push(...storeResult.map((r: any) => r.id));
+      } catch (e: any) {
+        console.error('   ❌ Error fetching store IDs:', e.message);
+      }
       
       if (storeIds.length > 0) {
-        await seedProducts(storeIds);
-        console.log('✨ Database seeding complete!');
+        const productCount = await seedProducts(storeIds);
+        console.log(`✨ Database seeding complete! Added ${productCount} products`);
+      } else {
+        console.log('   ⚠️  No stores found to seed products for');
       }
       return;
     }
