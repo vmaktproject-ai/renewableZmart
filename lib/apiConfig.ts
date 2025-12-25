@@ -5,42 +5,43 @@
  */
 
 export const getApiBaseUrl = () => {
-  // Try environment variable first
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL
+  // Check if we're in client-side environment
+  if (typeof window === 'undefined') {
+    // Server-side: use environment variable or hardcoded production URL
+    return process.env.NEXT_PUBLIC_API_URL || 'https://renewablezmart-backend.onrender.com/api'
   }
   
-  // Production fallback
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+  // Client-side: detect environment
+  const hostname = window.location.hostname
+  const isProduction = hostname !== 'localhost' && hostname !== '127.0.0.1'
+  
+  if (isProduction) {
+    // Production environment: use Render backend
     return 'https://renewablezmart-backend.onrender.com/api'
   }
   
-  // For client-side local development
-  if (typeof window !== 'undefined') {
-    return `${window.location.protocol}//${window.location.hostname}:4000/api`
-  }
-  
-  // Default fallback
+  // Local development: use localhost
   return 'http://localhost:4000/api'
 }
 
 export const getBackendBaseUrl = () => {
-  // Try environment variable first
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL.replace('/api', '')
+  // Check if we're in client-side environment
+  if (typeof window === 'undefined') {
+    // Server-side: use environment variable or hardcoded production URL
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://renewablezmart-backend.onrender.com/api'
+    return apiUrl.replace('/api', '')
   }
   
-  // Production fallback
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+  // Client-side: detect environment
+  const hostname = window.location.hostname
+  const isProduction = hostname !== 'localhost' && hostname !== '127.0.0.1'
+  
+  if (isProduction) {
+    // Production environment: use Render backend
     return 'https://renewablezmart-backend.onrender.com'
   }
   
-  // For client-side local development
-  if (typeof window !== 'undefined') {
-    return `${window.location.protocol}//${window.location.hostname}:4000`
-  }
-  
-  // Default fallback
+  // Local development: use localhost
   return 'http://localhost:4000'
 }
 
