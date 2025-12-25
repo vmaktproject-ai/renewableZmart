@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import Header from '../components/Header'
+import PasswordInput from '../components/PasswordInput'
 import { useRouter } from 'next/router'
 
 interface AdminInfo {
@@ -263,12 +264,11 @@ export default function AdminProfile() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     New Password
                   </label>
-                  <input
-                    type="password"
+                  <PasswordInput
+                    name="newPassword"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     autoComplete="new-password"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500"
                     placeholder="Enter new password"
                     required
                     minLength={6}
@@ -279,12 +279,11 @@ export default function AdminProfile() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Confirm Password
                   </label>
-                  <input
-                    type="password"
+                  <PasswordInput
+                    name="confirmPassword"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     autoComplete="new-password"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500"
                     placeholder="Confirm new password"
                     required
                     minLength={6}

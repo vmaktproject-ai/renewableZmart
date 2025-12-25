@@ -181,10 +181,14 @@ export default function ProductPage() {
   const installment = product ? getInstallmentDetails(product.price) : null
 
   // Get full image URL
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000'
-  const primaryImageUrl = product?.image?.startsWith('http') 
-    ? product.image 
-    : `${API_BASE_URL}${product?.image || ''}`
+  const primaryImageUrl = (() => {
+    const baseUrl = typeof window !== 'undefined' 
+      ? `${window.location.protocol}//${window.location.hostname}:4000`
+      : 'http://localhost:4000'
+    return product?.image?.startsWith('http') 
+      ? product.image 
+      : `${baseUrl}${product?.image || ''}`
+  })()
 
   if (!product) {
     return <div><Header /><main className="container mx-auto px-4 py-8"><p>Product not found</p></main></div>
@@ -203,7 +207,7 @@ export default function ProductPage() {
           <span className="text-gray-900">{product.title}</span>
         </div>
 
-        <div className="grid lg:grid-cols-[400px_1fr_300px] gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr_300px] gap-4">
           {/* Left: Image/Video Gallery with Carousel */}
           <MediaCarousel 
             mainImage={primaryImageUrl}
@@ -213,8 +217,8 @@ export default function ProductPage() {
           />
 
           {/* Middle: Product Details */}
-          <div className="bg-white rounded-lg p-4">
-            <h1 className="text-xl font-normal mb-3 leading-snug">{product.title}</h1>
+          <div className="bg-white rounded-lg p-3 sm:p-4">
+            <h1 className="text-lg sm:text-xl font-normal mb-3 leading-snug">{product.title}</h1>
             
             {/* Rating - Only show if there are reviews */}
             {reviews.length > 0 && (

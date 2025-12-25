@@ -128,21 +128,35 @@ export default function Header({ onCategoryChange }: HeaderProps = {}) {
 
   useEffect(() => {
     setMounted(true)
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('renewablezmart_location') : null
+    if (typeof window === 'undefined') return
+
+    // Load and set location from localStorage
+    const saved = localStorage.getItem('renewablezmart_location')
     if (saved) {
-      const { country, city } = JSON.parse(saved)
-      setSelectedCountry(country)
-      setSelectedCity(city)
+      try {
+        const { country, city } = JSON.parse(saved)
+        setSelectedCountry(country)
+        setSelectedCity(city)
+        // Set currency based on saved location
+        const countryCurrency = getCountryCurrency(country)
+        setCurrency(countryCurrency)
+      } catch (e) {
+        console.error('Error loading location:', e)
+      }
+    } else {
+      // Initialize with Nigeria (default) and set NGN currency
+      setSelectedCountry('Nigeria')
+      setSelectedCity('Lagos')
+      setCurrency('NGN')
+      localStorage.setItem('renewablezmart_location', JSON.stringify({ country: 'Nigeria', city: 'Lagos' }))
     }
 
-    const user = typeof window !== 'undefined' ? localStorage.getItem('renewablezmart_current_user') : null
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
+    const user = localStorage.getItem('renewablezmart_current_user')
+    const token = localStorage.getItem('accessToken')
     
     // Clear cart if no user is logged in (clean up abandoned carts from previous sessions)
     if (!user || !token) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('renewablezmart_cart')
-      }
+      localStorage.removeItem('renewablezmart_cart')
     }
     
     if (user) {

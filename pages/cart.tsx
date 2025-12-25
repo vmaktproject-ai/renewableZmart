@@ -429,14 +429,14 @@ export default function Cart() {
             </Link>
           </div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+            <div className="lg:col-span-2 space-y-3 lg:space-y-4">
               {cart.map((item) => (
-                <div key={item.id} className="bg-white rounded-lg p-4 flex gap-4 shadow">
+                <div key={item.id} className="bg-white rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 shadow">
                   <img 
                     src={item.image?.startsWith('http') ? item.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000'}${item.image}`} 
                     alt={item.title} 
-                    className="w-24 h-24 object-cover rounded"
+                    className="w-20 sm:w-24 h-20 sm:h-24 object-cover rounded flex-shrink-0"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = 'data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"%3E%3Crect fill=\"%23ddd\" width=\"100\" height=\"100\"/%3E%3Ctext fill=\"%23999\" x=\"50%25\" y=\"50%25\" text-anchor=\"middle\" dy=\".3em\"%3ENo Image%3C/text%3E%3C/svg%3E';

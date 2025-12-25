@@ -2,6 +2,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Header from '../components/Header'
+import PasswordInput from '../components/PasswordInput'
 import { authService } from '@/lib/services'
 import { africanCountries } from '../data/locations'
 import { validatePhoneNumber, formatPhoneNumber, getPhoneInfo } from '@/lib/phoneValidation'
@@ -427,12 +428,29 @@ export default function Register() {
               <div className="grid md:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Password <span className="text-red-500">*</span></label>
-                  <input type="password" name="password" value={formData.password} onChange={handleChange} autoComplete="new-password" className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`} placeholder="Min. 8 characters" />
+                  <PasswordInput
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    autoComplete="new-password"
+                    placeholder="Min. 8 characters"
+                    error={!!errors.password}
+                    minLength={8}
+                    required
+                  />
                   {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password <span className="text-red-500">*</span></label>
-                  <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} autoComplete="new-password" className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`} placeholder="Re-enter password" />
+                  <PasswordInput
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    autoComplete="new-password"
+                    placeholder="Re-enter password"
+                    error={!!errors.confirmPassword}
+                    required
+                  />
                   {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
                 </div>
               </div>

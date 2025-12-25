@@ -53,7 +53,7 @@ export default function Stores() {
         }
 
         // Fetch all vendor products (without approval filter)
-        const productsResponse = await fetch('/api/products/all')
+        const productsResponse = await fetch('http://localhost:4000/api/products/all-vendor')
         if (productsResponse.ok) {
           const productsData = await productsResponse.json()
           console.log('Vendor products fetched:', productsData?.length || 0)
@@ -104,41 +104,43 @@ export default function Stores() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-12">
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-8 sm:py-12">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl font-bold mb-3">🏪 Vendor Stores in {selectedCountry}</h1>
-            <p className="text-xl text-white/90">Discover trusted sellers of renewable energy products</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3">🏪 Vendor Stores in {selectedCountry}</h1>
+            <p className="text-base sm:text-lg md:text-xl text-white/90">Discover trusted sellers of renewable energy products</p>
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-6 sm:py-8">
           {/* Search and Filter */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+            <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
+              <div className="w-full">
                 <input
                   type="text"
-                  placeholder="Search stores by name, location, or products..."
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-600"
+                  placeholder="Search stores by name..."
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-600 text-sm sm:text-base"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <select 
-                className="px-4 py-3 border-2 border-emerald-600 rounded-lg focus:outline-none focus:border-emerald-700 bg-white"
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-              >
-                <option value="all">All Locations</option>
-                {availableCities.map(city => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-              <select className="px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-600 bg-white">
-                <option>All Stores</option>
-                <option>Verified Only</option>
-                <option>Top Rated</option>
-              </select>
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 md:flex">
+                <select 
+                  className="px-3 sm:px-4 py-2 sm:py-3 border-2 border-emerald-600 rounded-lg focus:outline-none focus:border-emerald-700 bg-white text-sm sm:text-base"
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                >
+                  <option value="all">All Locations</option>
+                  {availableCities.map(city => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+                <select className="px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-600 bg-white text-sm sm:text-base">
+                  <option>All Stores</option>
+                  <option>Verified Only</option>
+                  <option>Top Rated</option>
+                </select>
+              </div>
             </div>
           </div>
 

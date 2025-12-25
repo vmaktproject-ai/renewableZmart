@@ -22,13 +22,23 @@ export default function Orders() {
         'Authorization': `Bearer ${token}`
       }
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          if (res.status === 401) {
+            localStorage.removeItem('accessToken')
+            router.push('/login')
+          }
+          return Promise.reject(new Error(`HTTP error! status: ${res.status}`))
+        }
+        return res.json()
+      })
       .then(data => {
-        setOrders(data)
+        setOrders(Array.isArray(data) ? data : [])
         setLoading(false)
       })
       .catch(err => {
         console.error('Failed to fetch orders:', err)
+        setOrders([])
         setLoading(false)
       })
   }, [])

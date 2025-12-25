@@ -117,22 +117,23 @@ function AdminDashboard() {
   const fetchDashboardData = async (token: string) => {
     try {
       setLoading(true)
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
       
       // Fetch all data in parallel
       const [usersRes, ordersRes, productsRes, storesRes, pendingRes] = await Promise.all([
-        fetch('https://renewablezmart-backend.onrender.com/api/admin/users', {
+        fetch(`${baseUrl}/admin/users`, {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('https://renewablezmart-backend.onrender.com/api/admin/orders', {
+        fetch(`${baseUrl}/admin/orders`, {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('https://renewablezmart-backend.onrender.com/api/admin/products', {
+        fetch(`${baseUrl}/admin/products`, {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('https://renewablezmart-backend.onrender.com/api/admin/stores', {
+        fetch(`${baseUrl}/admin/stores`, {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('https://renewablezmart-backend.onrender.com/api/admin/products/pending', {
+        fetch(`${baseUrl}/admin/products/pending`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       ])
@@ -195,8 +196,9 @@ function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return
     
     try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`https://renewablezmart-backend.onrender.com/api/admin/users/${userId}`, {
+      const response = await fetch(`${baseUrl}/admin/users/${userId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -215,8 +217,9 @@ function AdminDashboard() {
 
   const updateOrderStatus = async (orderId: string, status: string) => {
     try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`https://renewablezmart-backend.onrender.com/api/admin/orders/${orderId}/status`, {
+      const response = await fetch(`${baseUrl}/admin/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

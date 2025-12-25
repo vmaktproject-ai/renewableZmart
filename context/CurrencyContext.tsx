@@ -11,6 +11,7 @@ interface CurrencyContextType {
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined)
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
+  // Initialize with Nigeria as default since the site is targeting Nigeria
   const [currency, setCurrencyState] = useState<string>('NGN')
 
   // Map country names to currency codes
@@ -43,6 +44,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   }
 
   const updateCurrencyFromLocation = () => {
+    if (typeof window === 'undefined') return null
+    
     const location = localStorage.getItem('renewablezmart_location')
     if (location) {
       try {
@@ -58,17 +61,19 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    // First, try to get currency from location
+    if (typeof window === 'undefined') return
+
+    // First, try to get currency from stored location
     const locationCurrency = updateCurrencyFromLocation()
     
     if (!locationCurrency) {
-      // Fallback to saved preference or detection
+      // Fallback to saved preference
       const savedCurrency = localStorage.getItem('preferredCurrency')
       if (savedCurrency && currencies[savedCurrency]) {
         setCurrencyState(savedCurrency)
       } else {
-        const detected = detectUserCurrency()
-        setCurrencyState(detected)
+        // Default to NGN (Nigeria) for this site
+        setCurrencyState('NGN')
       }
     }
 
@@ -84,13 +89,12 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       updateCurrencyFromLocation()
     }
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('storage', handleStorageChange)
-      window.addEventListener('locationChanged', handleLocationChanged)
-      return () => {
-        window.removeEventListener('storage', handleStorageChange)
-        window.removeEventListener('locationChanged', handleLocationChanged)
-      }
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('locationChanged', handleLocationChanged)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('locationChanged', handleLocationChanged)
     }
   }, [])
 

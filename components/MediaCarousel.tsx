@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getBackendBaseUrl } from '../lib/apiConfig'
 
 interface MediaCarouselProps {
   mainImage: string
@@ -10,11 +11,19 @@ interface MediaCarouselProps {
 export default function MediaCarousel({ mainImage, images = [], videos = [], title }: MediaCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   
+  // Convert all image and video URLs to full URLs
+  const convertToFullUrl = (media: string) => {
+    if (!media) return ''
+    if (media.startsWith('http')) return media
+    const baseUrl = typeof window !== 'undefined' ? getBackendBaseUrl() : 'http://localhost:4000'
+    return `${baseUrl}${media}`
+  }
+  
   // Combine all media items (main image + additional images + videos)
   const allMedia = [
     mainImage,
-    ...images.slice(0, 5),
-    ...(videos || [])
+    ...images.map(img => convertToFullUrl(img)).slice(0, 5),
+    ...((videos || []).map(vid => convertToFullUrl(vid)))
   ].filter(Boolean)
 
   const goToPrevious = () => {
@@ -30,9 +39,8 @@ export default function MediaCarousel({ mainImage, images = [], videos = [], tit
   }
 
   const getMediaUrl = (media: string) => {
-    if (!media) return '';
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000'
-    return media.startsWith('http') ? media : `${API_BASE_URL}${media}`
+    // Media should already be a full URL from allMedia array
+    return media || ''
   }
 
   const currentMedia = allMedia[currentIndex] ? getMediaUrl(allMedia[currentIndex]) : ''

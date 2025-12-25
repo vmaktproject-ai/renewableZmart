@@ -9,11 +9,7 @@ const disposableEmailDomains = [
   'getnada.com', 'trashmail.com', 'yopmail.com', 'mintemail.com',
   'sharklasers.com', 'spam4.me', 'grr.la', 'discard.email',
   'mohmal.com', 'emailondeck.com', 'tempinbox.com', 'temp-mail.io',
-  'disposablemail.com', 'throwawaymail.com', 'burnermail.io',
-  
-  // Test/fake domains
-  'test.com', 'example.com', 'test.test', 'fake.com', 'dummy.com',
-  'nowhere.com', 'invalid.com', 'testing.com', 'sample.com'
+  'disposablemail.com', 'throwawaymail.com', 'burnermail.io'
 ]
 
 // Common email provider typos (suggest corrections)
@@ -124,12 +120,10 @@ export function validateEmail(email: string): EmailValidation {
  */
 function isFakeEmail(email: string): boolean {
   const fakePatterns = [
-    /^(test|fake|dummy|example|sample|user)\d*@/i,
-    /^[a-z]{1,3}\d{5,}@/i, // Short prefix with many numbers (e.g., abc12345@)
-    /^(admin|info|contact|support|noreply)@test\./i,
-    /^[a-z]{20,}@/i, // Extremely long random string
-    /^(\w)\1{5,}@/i, // Repeated characters (e.g., aaaaaa@)
-    /^(123|111|000|999)+@/i, // Number patterns
+    /^(test|fake|dummy|example|sample)\d*@/i, // Only obvious fake prefixes
+    /^(admin|info|contact|support|noreply)@test\./i, // test.* domain
+    /^(\w)\1{10,}@/i, // Many repeated characters (e.g., aaaaaaaaaaaa@)
+    /^(000|111|222|333|444|555|666|777|888|999){2,}@/i, // Repeated number blocks
     /@(localhost|127\.0\.0\.1|0\.0\.0\.0)/i // Local addresses
   ]
 

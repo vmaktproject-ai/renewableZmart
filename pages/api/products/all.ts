@@ -5,7 +5,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}api/products`
+    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}products`
     
     console.log('Fetching all products from:', backendUrl)
     

@@ -861,7 +861,7 @@ export default function VendorDashboard() {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
                             <img 
-                              src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000'}${product.image}`} 
+                              src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000'}${product.image?.startsWith('/') ? '' : '/'}${product.image}`} 
                               alt={product.name} 
                               className="w-12 h-12 object-cover rounded" 
                             />

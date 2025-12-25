@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
 import type { CatalogProduct } from '../types'
 import { MouseEvent } from 'react'
+import { getBackendBaseUrl } from '../lib/apiConfig'
 
 interface ProductCardProps {
   product: CatalogProduct
@@ -17,11 +18,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     addToCart(product)
   }
 
-  // Get full image URL
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000'
+  // Get full image URL - use backend directly for images
+  const baseUrl = typeof window !== 'undefined' ? getBackendBaseUrl() : 'http://localhost:4000'
+  
   const imageUrl = product.image?.startsWith('http') 
     ? product.image 
-    : `${API_BASE_URL}${product.image}`
+    : `${baseUrl}${product.image || '/uploads/default-product.jpg'}`
 
   return (
     <Link href={`/product/${product.id}`}>

@@ -24,7 +24,8 @@ export default function About() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('https://renewablezmart-backend.onrender.com/api/admin/stats/public')
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
+        const response = await fetch(`${baseUrl}/admin/stats/public`)
         if (response.ok) {
           const data = await response.json()
           setStats(data)
